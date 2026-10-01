@@ -4,37 +4,675 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WiFi-Doctor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='style.css') }}"
     />
   </head>
   <body>
-    <div class="container">
-      <header>
-        <h1>🩺 WiFi-Doctor</h1>
-        <p class="subtitle">Your Network Diagnostic Tool</p>
-      </header>
-
-      <main>
-        <div class="card">
-          <h2>Welcome!</h2>
-          <p>This tool will help you diagnose your WiFi and network issues.</p>
-          <p>Features coming soon:</p>
-          <ul>
-            <li>✅ Ping Test</li>
-            <li>⬜ Packet Loss</li>
-            <li>⬜ Gateway Test</li>
-            <li>⬜ DNS Test</li>
-            <li>⬜ WiFi Signal</li>
-            <li>⬜ Speed Test</li>
-          </ul>
+    <div class="app">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">W</div>
+          <div class="brand-name">WiFi-Doctor</div>
         </div>
-      </main>
 
-      <footer>
-        <p>Built by <strong>Tauhidul_Islam</strong> | Day 2</p>
-      </footer>
+        <nav class="nav">
+          <div class="nav-label">Diagnostics</div>
+          <a class="nav-item active" data-test="wifi">
+            <span class="nav-icon">📶</span
+            ><span class="nav-text">WiFi Info</span>
+          </a>
+          <a class="nav-item" data-test="router">
+            <span class="nav-icon">🏠</span
+            ><span class="nav-text">Router Ping</span>
+          </a>
+          <a class="nav-item" data-test="internet">
+            <span class="nav-icon">🌐</span
+            ><span class="nav-text">Internet Ping</span>
+          </a>
+          <a class="nav-item" data-test="loss">
+            <span class="nav-icon">📉</span
+            ><span class="nav-text">Packet Loss</span>
+          </a>
+          <a class="nav-item" data-test="dns">
+            <span class="nav-icon">🔍</span
+            ><span class="nav-text">DNS Speed</span>
+          </a>
+          <a class="nav-item" data-test="gateway">
+            <span class="nav-icon">🏥</span
+            ><span class="nav-text">Gateway Health</span>
+          </a>
+          <a class="nav-item" data-test="speed">
+            <span class="nav-icon">⚡</span
+            ><span class="nav-text">Speed Test</span>
+          </a>
+
+          <div class="nav-label" style="margin-top: 24px">Data</div>
+          <a class="nav-item" data-test="history">
+            <span class="nav-icon">📊</span
+            ><span class="nav-text">History</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-foot">
+          <span class="status-dot"></span>
+          <span>v1.0.0</span>
+        </div>
+      </aside>
+
+      <!-- MAIN -->
+      <main class="main">
+        <div class="topbar">
+          <div>
+            <h1>Dashboard</h1>
+            <p class="topbar-sub">Network diagnostics &amp; monitoring</p>
+          </div>
+          <div class="pill">
+            <span class="pill-dot"></span>
+            <span>Connected</span>
+          </div>
+        </div>
+
+        <!-- HERO -->
+        <section class="hero">
+          <div class="hero-body">
+            <div class="hero-eyebrow">Network Health</div>
+            <h2 class="hero-title">Run a full diagnostic</h2>
+            <p class="hero-desc">
+              Test your entire network in one click — get a score, insights, and
+              clear recommendations.
+            </p>
+            <button id="diagnosisBtn" class="btn btn-primary">
+              <span class="btn-icon">◎</span>
+              Run Full Diagnosis
+            </button>
+          </div>
+          <div class="hero-score">
+            <div class="score-ring" id="scoreRing">
+              <div class="score-inner">
+                <div class="score-num" id="scoreValue">--</div>
+                <div class="score-cap" id="scoreLabel">Idle</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- INSIGHTS -->
+        <section id="insightsSection" class="block hidden">
+          <div class="block-head">
+            <h3 class="block-title">Insights</h3>
+            <span class="block-meta" id="insightsCount"></span>
+          </div>
+          <div id="insightsList" class="insights"></div>
+        </section>
+
+        <!-- CONNECTION -->
+        <section class="block">
+          <div class="block-head">
+            <h3 class="block-title">Connection</h3>
+            <button id="refreshConnBtn" class="icon-btn" title="Refresh">
+              ↻
+            </button>
+          </div>
+          <div class="conn-grid">
+            <div class="conn-cell">
+              <span class="conn-k">SSID</span
+              ><span class="conn-v mono" id="connSsid">—</span>
+            </div>
+            <div class="conn-cell">
+              <span class="conn-k">Signal</span
+              ><span class="conn-v mono" id="connSignal">—</span>
+            </div>
+            <div class="conn-cell">
+              <span class="conn-k">Local IP</span
+              ><span class="conn-v mono" id="connLocalIp">—</span>
+            </div>
+            <div class="conn-cell">
+              <span class="conn-k">Gateway</span
+              ><span class="conn-v mono" id="connGateway">—</span>
+            </div>
+            <div class="conn-cell">
+              <span class="conn-k">Channel</span
+              ><span class="conn-v mono" id="connChannel">—</span>
+            </div>
+            <div class="conn-cell">
+              <span class="conn-k">Radio</span
+              ><span class="conn-v mono" id="connRadio">—</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- TESTS -->
+        <section class="block">
+          <div class="block-head">
+            <h3 class="block-title">Tests</h3>
+            <span class="block-meta">Click to run</span>
+          </div>
+          <div class="tests">
+            <div class="test" data-test="wifi">
+              <span class="test-icon">📶</span>
+              <span class="test-idx">01</span>
+              <span class="test-name">WiFi Information</span>
+              <span class="test-dot" data-status="idle"></span>
+              <span class="test-go">→</span>
+            </div>
+            <div class="test" data-test="router">
+              <span class="test-icon">🏠</span>
+              <span class="test-idx">02</span>
+              <span class="test-name">Router Ping Test</span>
+              <span class="test-dot" data-status="idle"></span>
+              <span class="test-go">→</span>
+            </div>
+            <div class="test" data-test="internet">
+              <span class="test-icon">🌐</span>
+              <span class="test-idx">03</span>
+              <span class="test-name">Internet Ping Test</span>
+              <span class="test-dot" data-status="idle"></span>
+              <span class="test-go">→</span>
+            </div>
+            <div class="test" data-test="loss">
+              <span class="test-icon">📉</span>
+              <span class="test-idx">04</span>
+              <span class="test-name">Packet Loss Test</span>
+              <span class="test-dot" data-status="idle"></span>
+              <span class="test-go">→</span>
+            </div>
+            <div class="test" data-test="dns">
+              <span class="test-icon">🔍</span>
+              <span class="test-idx">05</span>
+              <span class="test-name">DNS Speed Test</span>
+              <span class="test-dot" data-status="idle"></span>
+              <span class="test-go">→</span>
+            </div>
+            <div class="test" data-test="gateway">
+              <span class="test-icon">🏥</span>
+              <span class="test-idx">06</span>
+              <span class="test-name">Gateway Health Check</span>
+              <span class="test-dot" data-status="idle"></span>
+              <span class="test-go">→</span>
+            </div>
+            <div class="test" data-test="speed">
+              <span class="test-icon">⚡</span>
+              <span class="test-idx">07</span>
+              <span class="test-name">Speed Test</span>
+              <span class="test-dot" data-status="idle"></span>
+              <span class="test-go">→</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- MORE INFO -->
+        <section class="block">
+          <button id="moreInfoBtn" class="more-toggle">
+            <span class="more-label"
+              ><span class="more-icon">◇</span> More Info</span
+            >
+            <span class="toggle-arrow">▼</span>
+          </button>
+          <div id="moreInfoContent" class="more-content hidden">
+            <div class="conn-cell">
+              <span class="conn-k">Public IP</span
+              ><span class="conn-v mono" id="infoPublicIp">—</span>
+            </div>
+            <div class="conn-cell">
+              <span class="conn-k">ISP</span
+              ><span class="conn-v mono" id="infoIsp">—</span>
+            </div>
+            <div class="conn-cell">
+              <span class="conn-k">Location</span
+              ><span class="conn-v mono" id="infoLocation">—</span>
+            </div>
+            <div class="conn-cell">
+              <span class="conn-k">Timezone</span
+              ><span class="conn-v mono" id="infoTimezone">—</span>
+            </div>
+            <div class="conn-cell">
+              <span class="conn-k">Uptime</span
+              ><span class="conn-v mono" id="infoUptime">—</span>
+            </div>
+          </div>
+        </section>
+
+        <footer class="foot">
+          <span>WiFi-Doctor</span>
+          <span class="foot-sep">·</span>
+          <span>Built by <strong>Tauhid</strong></span>
+          <span class="foot-sep">·</span>
+          <span>v1.0.0</span>
+        </footer>
+      </main>
     </div>
+
+    <div id="modalContainer" class="modal-stack"></div>
+
+    <template id="modalTemplate">
+      <div class="modal">
+        <div class="modal-head">
+          <span class="modal-title"></span>
+          <button class="modal-x">✕</button>
+        </div>
+        <div class="modal-body">
+          <button class="btn btn-run modal-run">Run</button>
+          <div class="result hidden">
+            <div class="result-content"></div>
+            <div class="status"></div>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <script>
+      const TESTS = {
+        wifi: {
+          title: "WiFi Information",
+          endpoint: "/api/wifi-info",
+          runLabel: "Get Info",
+          render: (d) => `
+                <div class="row"><span class="k">SSID</span><span class="v mono">${d.ssid || "—"}</span></div>
+                <div class="row"><span class="k">Signal</span><span class="v mono">${d.signal ?? "—"}%</span></div>
+                <div class="row"><span class="k">Channel</span><span class="v mono">${d.channel ?? "—"}</span></div>
+                <div class="row"><span class="k">Radio</span><span class="v mono">${d.radio || "—"}</span></div>
+            `,
+          status: () => null,
+        },
+        router: {
+          title: "Router Ping Test",
+          endpoint: "/api/router-ping",
+          runLabel: "Ping",
+          render: (d) => `
+                <div class="row"><span class="k">Gateway</span><span class="v mono">${d.host || "—"}</span></div>
+                <div class="row"><span class="k">Latency</span><span class="v mono">${d.latency_ms ?? "—"} ms</span></div>
+            `,
+          status: (d) => {
+            if (d.latency_ms == null) return { t: "N/A", c: "fair" };
+            if (d.latency_ms < 5) return { t: "Excellent", c: "good" };
+            if (d.latency_ms < 20) return { t: "Fair", c: "fair" };
+            return { t: "Poor", c: "poor" };
+          },
+        },
+        internet: {
+          title: "Internet Ping Test",
+          endpoint: "/api/internet-ping",
+          runLabel: "Ping",
+          render: (d) => `
+                <div class="row"><span class="k">Host</span><span class="v mono">${d.host || "—"}</span></div>
+                <div class="row"><span class="k">Latency</span><span class="v mono">${d.latency_ms ?? "—"} ms</span></div>
+                <div class="row"><span class="k">Loss</span><span class="v mono">${d.packet_loss_percent ?? 0}%</span></div>
+            `,
+          status: (d) => {
+            if (d.latency_ms == null) return { t: "N/A", c: "fair" };
+            if (d.latency_ms < 30 && (d.packet_loss_percent || 0) === 0)
+              return { t: "Excellent", c: "good" };
+            if (d.latency_ms < 100) return { t: "Fair", c: "fair" };
+            return { t: "Poor", c: "poor" };
+          },
+        },
+        loss: {
+          title: "Packet Loss Test",
+          endpoint: "/api/packet-loss",
+          runLabel: "Test",
+          render: (d) => `
+                <div class="row"><span class="k">Host</span><span class="v mono">${d.host || "—"}</span></div>
+                <div class="row"><span class="k">Sent</span><span class="v mono">${d.count ?? "—"}</span></div>
+                <div class="row"><span class="k">Loss</span><span class="v mono">${d.packet_loss_percent ?? 0}%</span></div>
+                <div class="row"><span class="k">Avg</span><span class="v mono">${d.latency_ms ?? "—"} ms</span></div>
+            `,
+          status: (d) => {
+            const l = d.packet_loss_percent || 0;
+            if (l === 0) return { t: "No loss", c: "good" };
+            if (l <= 2) return { t: "Minor loss", c: "fair" };
+            return { t: "High loss", c: "poor" };
+          },
+        },
+        dns: {
+          title: "DNS Speed Test",
+          endpoint: "/api/dns-test",
+          runLabel: "Test",
+          render: (d) => `
+                <div class="row"><span class="k">Domain</span><span class="v mono">${d.domain || "—"}</span></div>
+                <div class="row"><span class="k">Resolution</span><span class="v mono">${d.time_ms} ms</span></div>
+                <div class="row"><span class="k">Servers</span><span class="v mono">${(d.dns_servers || []).join(", ") || "—"}</span></div>
+            `,
+          status: (d) => {
+            if (d.time_ms == null) return { t: "N/A", c: "fair" };
+            if (d.time_ms < 20) return { t: "Fast", c: "good" };
+            if (d.time_ms < 100) return { t: "Fair", c: "fair" };
+            return { t: "Slow", c: "poor" };
+          },
+        },
+        gateway: {
+          title: "Gateway Health",
+          endpoint: "/api/gateway-health",
+          runLabel: "Check",
+          render: (d) => `
+                <div class="row"><span class="k">Gateway</span><span class="v mono">${d.gateway || "—"}</span></div>
+                <div class="row"><span class="k">Latency</span><span class="v mono">${d.latency_ms ?? "—"} ms</span></div>
+                <div class="row"><span class="k">Loss</span><span class="v mono">${d.packet_loss_percent ?? 0}%</span></div>
+            `,
+          status: (d) => {
+            if (d.latency_ms == null) return { t: "N/A", c: "fair" };
+            if (d.latency_ms < 5 && (d.packet_loss_percent || 0) === 0)
+              return { t: "Healthy", c: "good" };
+            if (d.latency_ms < 20) return { t: "Okay", c: "fair" };
+            return { t: "Issue", c: "poor" };
+          },
+        },
+        speed: {
+          title: "Speed Test",
+          endpoint: "/api/speed-test",
+          runLabel: "Run",
+          render: (d) => `
+                <div class="row"><span class="k">Download</span><span class="v mono">${d.download_mbps} Mbps</span></div>
+                <div class="row"><span class="k">Upload</span><span class="v mono">${d.upload_mbps} Mbps</span></div>
+                <div class="row"><span class="k">Ping</span><span class="v mono">${d.ping_ms} ms</span></div>
+                <div class="row"><span class="k">ISP</span><span class="v mono">${d.isp || "—"}</span></div>
+            `,
+          status: (d) => {
+            if (d.download_mbps >= 50) return { t: "Fast", c: "good" };
+            if (d.download_mbps >= 10) return { t: "Fair", c: "fair" };
+            return { t: "Slow", c: "poor" };
+          },
+        },
+      };
+
+      const modalStack = document.getElementById("modalContainer");
+      const modalTpl = document.getElementById("modalTemplate");
+      const openModals = {};
+
+      function setDot(key, status) {
+        const dot = document.querySelector(
+          `.test[data-test="${key}"] .test-dot`,
+        );
+        if (dot) dot.setAttribute("data-status", status);
+      }
+
+      function openModal(key, autoRun = false) {
+        if (openModals[key]) {
+          openModals[key].el.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+          openModals[key].el.classList.add("flash");
+          setTimeout(() => openModals[key].el.classList.remove("flash"), 500);
+          if (autoRun && openModals[key].run) openModals[key].run.click();
+          return;
+        }
+
+        if (key === "history") {
+          openHistory();
+          return;
+        }
+
+        const test = TESTS[key];
+        if (!test) return;
+
+        const node = modalTpl.content.cloneNode(true);
+        const modal = node.querySelector(".modal");
+
+        modal.querySelector(".modal-title").textContent = test.title;
+        const runBtn = modal.querySelector(".modal-run");
+        runBtn.textContent = test.runLabel;
+
+        const resultBox = modal.querySelector(".result");
+        const resultContent = modal.querySelector(".result-content");
+        const statusBox = modal.querySelector(".status");
+
+        const runFn = async () => {
+          runBtn.disabled = true;
+          runBtn.textContent = "Running…";
+          setDot(key, "loading");
+          try {
+            const r = await fetch(test.endpoint);
+            const d = await r.json();
+            if (d.success) {
+              resultContent.innerHTML = test.render(d);
+              const s = test.status(d);
+              if (s) {
+                statusBox.textContent = s.t;
+                statusBox.className = "status " + s.c;
+                setDot(key, s.c);
+              } else {
+                statusBox.textContent = "";
+                statusBox.className = "status";
+                setDot(key, "good");
+              }
+              resultBox.classList.remove("hidden");
+            } else {
+              resultContent.innerHTML = `<p class="err">${d.error || "Unknown error"}</p>`;
+              setDot(key, "poor");
+              resultBox.classList.remove("hidden");
+            }
+          } catch (e) {
+            resultContent.innerHTML = `<p class="err">${e.message}</p>`;
+            setDot(key, "poor");
+            resultBox.classList.remove("hidden");
+          } finally {
+            runBtn.disabled = false;
+            runBtn.textContent = test.runLabel;
+          }
+        };
+
+        runBtn.addEventListener("click", runFn);
+        modal.querySelector(".modal-x").addEventListener("click", () => {
+          modal.remove();
+          delete openModals[key];
+        });
+
+        modalStack.appendChild(modal);
+        openModals[key] = { el: modal, run: runBtn };
+
+        if (autoRun) runFn();
+      }
+
+      async function openHistory() {
+        if (openModals["history"]) {
+          openModals["history"].el.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+          return;
+        }
+        const node = modalTpl.content.cloneNode(true);
+        const modal = node.querySelector(".modal");
+        modal.querySelector(".modal-title").textContent = "History";
+        modal.querySelector(".modal-run").style.display = "none";
+
+        const resultBox = modal.querySelector(".result");
+        const resultContent = modal.querySelector(".result-content");
+        resultContent.innerHTML = '<p class="muted">Loading…</p>';
+        resultBox.classList.remove("hidden");
+
+        try {
+          const r = await fetch("/api/history");
+          const d = await r.json();
+          if (d.success && d.history.length) {
+            resultContent.innerHTML = d.history
+              .map((h) => {
+                const t = new Date(h.timestamp).toLocaleString();
+                return `<div class="row"><span class="k mono">${h.test_type}</span><span class="v mono">${t}${h.score ? " · " + h.score : ""}</span></div>`;
+              })
+              .join("");
+          } else {
+            resultContent.innerHTML = '<p class="muted">No history yet.</p>';
+          }
+        } catch (e) {
+          resultContent.innerHTML = `<p class="err">${e.message}</p>`;
+        }
+
+        modal.querySelector(".modal-x").addEventListener("click", () => {
+          modal.remove();
+          delete openModals["history"];
+        });
+
+        modalStack.appendChild(modal);
+        openModals["history"] = { el: modal };
+      }
+
+      document.querySelectorAll(".test").forEach((el) => {
+        el.addEventListener("click", () => openModal(el.dataset.test));
+      });
+      document.querySelectorAll(".nav-item").forEach((el) => {
+        el.addEventListener("click", () => openModal(el.dataset.test));
+      });
+
+      async function loadConn() {
+        try {
+          const r = await fetch("/api/connection-info");
+          const d = await r.json();
+          if (d.success) {
+            document.getElementById("connSsid").textContent = d.ssid || "—";
+            document.getElementById("connSignal").textContent =
+              (d.signal ?? "—") + "%";
+            document.getElementById("connLocalIp").textContent =
+              d.local_ip || "—";
+            document.getElementById("connGateway").textContent =
+              d.gateway || "—";
+            document.getElementById("connChannel").textContent =
+              d.channel ?? "—";
+            document.getElementById("connRadio").textContent = d.radio || "—";
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+      document
+        .getElementById("refreshConnBtn")
+        .addEventListener("click", loadConn);
+      loadConn();
+
+      const moreBtn = document.getElementById("moreInfoBtn");
+      const moreBox = document.getElementById("moreInfoContent");
+      const moreArrow = moreBtn.querySelector(".toggle-arrow");
+      let moreLoaded = false;
+
+      moreBtn.addEventListener("click", async () => {
+        moreBox.classList.toggle("hidden");
+        const open = !moreBox.classList.contains("hidden");
+        moreArrow.textContent = open ? "▲" : "▼";
+
+        if (open && !moreLoaded) {
+          moreLoaded = true;
+          try {
+            const r = await fetch("/api/more-info");
+            const d = await r.json();
+            if (d.success) {
+              document.getElementById("infoPublicIp").textContent =
+                d.public_ip || "—";
+              document.getElementById("infoIsp").textContent =
+                d.isp_info?.isp || "—";
+              const loc = [
+                d.isp_info?.city,
+                d.isp_info?.region,
+                d.isp_info?.country,
+              ]
+                .filter(Boolean)
+                .join(", ");
+              document.getElementById("infoLocation").textContent = loc || "—";
+              document.getElementById("infoTimezone").textContent =
+                d.isp_info?.timezone || "—";
+            }
+            const r2 = await fetch("/api/connection-info");
+            const d2 = await r2.json();
+            if (d2.success)
+              document.getElementById("infoUptime").textContent =
+                d2.uptime || "—";
+          } catch (e) {
+            console.error(e);
+          }
+        }
+      });
+
+      const dBtn = document.getElementById("diagnosisBtn");
+      const scoreRing = document.getElementById("scoreRing");
+      const scoreValue = document.getElementById("scoreValue");
+      const scoreLabel = document.getElementById("scoreLabel");
+      const insightsSection = document.getElementById("insightsSection");
+      const insightsList = document.getElementById("insightsList");
+      const insightsCount = document.getElementById("insightsCount");
+
+      function animateScore(target) {
+        let cur = 0;
+        const step = Math.max(1, Math.floor(target / 50));
+        const iv = setInterval(() => {
+          cur += step;
+          if (cur >= target) {
+            cur = target;
+            clearInterval(iv);
+          }
+          scoreValue.textContent = cur;
+        }, 18);
+      }
+
+      function setScore(score) {
+        scoreRing.classList.remove("good", "fair", "poor");
+        if (score >= 80) {
+          scoreLabel.textContent = "Excellent";
+          scoreRing.classList.add("good");
+        } else if (score >= 60) {
+          scoreLabel.textContent = "Good";
+          scoreRing.classList.add("good");
+        } else if (score >= 40) {
+          scoreLabel.textContent = "Fair";
+          scoreRing.classList.add("fair");
+        } else {
+          scoreLabel.textContent = "Poor";
+          scoreRing.classList.add("poor");
+        }
+      }
+
+      function renderInsights(list) {
+        if (!list || !list.length) {
+          insightsSection.classList.add("hidden");
+          return;
+        }
+        insightsList.innerHTML = list
+          .map(
+            (i) => `
+            <div class="insight insight-${i.type}">
+                <span class="insight-ico">${i.icon}</span>
+                <span class="insight-txt">${i.text}</span>
+            </div>
+        `,
+          )
+          .join("");
+        insightsCount.textContent =
+          list.length + " item" + (list.length > 1 ? "s" : "");
+        insightsSection.classList.remove("hidden");
+      }
+
+      dBtn.addEventListener("click", async () => {
+        dBtn.disabled = true;
+        dBtn.innerHTML = '<span class="btn-icon spin">◎</span> Diagnosing…';
+        scoreValue.textContent = "--";
+        scoreLabel.textContent = "Scanning";
+
+        try {
+          const r = await fetch("/api/full-diagnosis");
+          const d = await r.json();
+          if (d.success) {
+            setScore(d.score);
+            animateScore(d.score);
+            renderInsights(d.insights);
+          } else {
+            scoreLabel.textContent = "Error";
+            alert("Diagnosis error: " + (d.error || "Unknown"));
+          }
+        } catch (e) {
+          scoreLabel.textContent = "Failed";
+          alert("Request failed: " + e.message);
+        } finally {
+          dBtn.disabled = false;
+          dBtn.innerHTML = '<span class="btn-icon">◎</span> Run Full Diagnosis';
+        }
+      });
+    </script>
   </body>
 </html>
